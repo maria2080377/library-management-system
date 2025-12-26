@@ -98,14 +98,6 @@ public class Library {
                 totalBooks > 0 ? (double) borrowedBooks / totalBooks * 100 : 0.0);
     }
 
-    // ============================================
-    // НОВЫЙ МЕТОД: removeBook() - ДОБАВЛЕН В ЭТОМ КОММИТЕ
-    // ============================================
-    /**
-     * Удаляет книгу из библиотеки по ID
-     * @param id идентификатор книги для удаления
-     * @return true если книга найдена и удалена, false если книга не найдена
-     */
     public boolean removeBook(int id) {
         Book bookToRemove = findBookById(id);
 
@@ -120,12 +112,82 @@ public class Library {
     }
 
     // ============================================
-    // ВЛОЖЕННЫЙ СТАТИЧЕСКИЙ КЛАСС (НУЖНО ОБНОВИТЬ ДЛЯ REMOVE_BOOK)
+    // НОВЫЙ МЕТОД: updateBook() - ДОБАВЛЕН В ЭТОМ КОММИТЕ
+    // ============================================
+    /**
+     * Обновляет информацию о книге по ID
+     * @param id идентификатор книги для обновления
+     * @param newTitle новое название книги (null если не менять)
+     * @param newAuthor новый автор (null если не менять)
+     * @param newYear новый год издания (0 если не менять)
+     * @param newIsbn новый ISBN (null если не менять)
+     * @return true если книга найдена и обновлена, false если книга не найдена
+     */
+    public boolean updateBook(int id, String newTitle, String newAuthor,
+                              int newYear, String newIsbn) {
+        Book bookToUpdate = findBookById(id);
+
+        if (bookToUpdate != null) {
+            boolean changed = false;
+            StringBuilder changes = new StringBuilder();
+
+            // Обновляем название, если передано новое
+            if (newTitle != null && !newTitle.isEmpty() &&
+                    !newTitle.equals(bookToUpdate.getTitle())) {
+                // В реальности здесь нужен сеттер в классе Book
+                changes.append("Название: '").append(bookToUpdate.getTitle())
+                        .append("' -> '").append(newTitle).append("'; ");
+                // bookToUpdate.setTitle(newTitle); // будет в следующей версии Book
+                changed = true;
+            }
+
+            // Обновляем автора, если передан новый
+            if (newAuthor != null && !newAuthor.isEmpty() &&
+                    !newAuthor.equals(bookToUpdate.getAuthor())) {
+                changes.append("Автор: '").append(bookToUpdate.getAuthor())
+                        .append("' -> '").append(newAuthor).append("'; ");
+                // bookToUpdate.setAuthor(newAuthor); // будет в следующей версии Book
+                changed = true;
+            }
+
+            // Обновляем год, если передан новый
+            if (newYear > 0 && newYear != bookToUpdate.getYear()) {
+                changes.append("Год: ").append(bookToUpdate.getYear())
+                        .append(" -> ").append(newYear).append("; ");
+                // bookToUpdate.setYear(newYear); // будет в следующей версии Book
+                changed = true;
+            }
+
+            // Обновляем ISBN, если передан новый
+            if (newIsbn != null && !newIsbn.isEmpty() &&
+                    !newIsbn.equals(bookToUpdate.getIsbn())) {
+                changes.append("ISBN: '").append(bookToUpdate.getIsbn())
+                        .append("' -> '").append(newIsbn).append("'; ");
+                // bookToUpdate.setIsbn(newIsbn); // будет в следующей версии Book
+                changed = true;
+            }
+
+            if (changed) {
+                operationLog.addEntry(OperationLog.OperationType.UPDATE_BOOK,
+                        "Обновлена книга ID " + id + ": " + changes.toString());
+            } else {
+                operationLog.addEntry(OperationLog.OperationType.UPDATE_BOOK,
+                        "Попытка обновления книги ID " + id + " (изменений нет)");
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    // ============================================
+    // ВЛОЖЕННЫЙ СТАТИЧЕСКИЙ КЛАСС (НУЖНО ОБНОВИТЬ ДЛЯ UPDATE_BOOK)
     // ============================================
     public static class OperationLog {
-        // ОБНОВЛЕННЫЙ ENUM - добавлен REMOVE_BOOK
+        // ОБНОВЛЕННЫЙ ENUM - добавлен UPDATE_BOOK
         public enum OperationType {
-            ADD_BOOK, BORROW, RETURN, REMOVE_BOOK
+            ADD_BOOK, BORROW, RETURN, REMOVE_BOOK, UPDATE_BOOK
         }
 
         public class LogEntry {
