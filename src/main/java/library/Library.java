@@ -74,19 +74,11 @@ public class Library {
         operationLog.printLog();
     }
 
-    // ============================================
-    // НОВЫЙ МЕТОД: getStatistics() - ДОБАВЛЕН В ЭТОМ КОММИТЕ
-    // ============================================
-    /**
-     * Возвращает статистику по книгам в библиотеке
-     * @return строка с информацией о количестве книг
-     */
     public String getStatistics() {
         int totalBooks = books.size();
         int availableBooks = 0;
         int borrowedBooks = 0;
 
-        // Подсчитываем доступные и выданные книги
         for (Book book : books) {
             if (book.isAvailable()) {
                 availableBooks++;
@@ -95,7 +87,6 @@ public class Library {
             }
         }
 
-        // Формируем строку статистики
         return String.format("Статистика библиотеки:\n" +
                         "  Всего книг: %d\n" +
                         "  Доступно для выдачи: %d\n" +
@@ -108,11 +99,33 @@ public class Library {
     }
 
     // ============================================
-    // ВЛОЖЕННЫЙ СТАТИЧЕСКИЙ КЛАСС
+    // НОВЫЙ МЕТОД: removeBook() - ДОБАВЛЕН В ЭТОМ КОММИТЕ
+    // ============================================
+    /**
+     * Удаляет книгу из библиотеки по ID
+     * @param id идентификатор книги для удаления
+     * @return true если книга найдена и удалена, false если книга не найдена
+     */
+    public boolean removeBook(int id) {
+        Book bookToRemove = findBookById(id);
+
+        if (bookToRemove != null) {
+            books.remove(bookToRemove);
+            operationLog.addEntry(OperationLog.OperationType.REMOVE_BOOK,
+                    "Удалена книга: " + bookToRemove.getTitle() + " (ID: " + id + ")");
+            return true;
+        }
+
+        return false;
+    }
+
+    // ============================================
+    // ВЛОЖЕННЫЙ СТАТИЧЕСКИЙ КЛАСС (НУЖНО ОБНОВИТЬ ДЛЯ REMOVE_BOOK)
     // ============================================
     public static class OperationLog {
+        // ОБНОВЛЕННЫЙ ENUM - добавлен REMOVE_BOOK
         public enum OperationType {
-            ADD_BOOK, BORROW, RETURN
+            ADD_BOOK, BORROW, RETURN, REMOVE_BOOK
         }
 
         public class LogEntry {
