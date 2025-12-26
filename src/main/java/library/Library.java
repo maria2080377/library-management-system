@@ -5,21 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Library {
-    // Поля класса
     private List<Book> books;
     private OperationLog operationLog;
 
-    // Конструктор - ТЕПЕРЬ С ИНИЦИАЛИЗАЦИЕЙ
     public Library() {
         this.books = new ArrayList<>();
-        this.operationLog = new OperationLog(); // теперь инициализируем
+        this.operationLog = new OperationLog();
     }
-
-    // Методы (теперь с реализацией)
 
     public void addBook(Book book) {
         books.add(book);
-        // Используем OperationLog для записи операции
         operationLog.addEntry(OperationLog.OperationType.ADD_BOOK,
                 "Добавлена книга: " + book.getTitle());
     }
@@ -75,37 +70,62 @@ public class Library {
         return result;
     }
 
-    // Новый метод для вывода журнала операций
     public void printOperationLog() {
         operationLog.printLog();
     }
 
     // ============================================
-    // ВЛОЖЕННЫЙ СТАТИЧЕСКИЙ КЛАСС - ПОЛНАЯ РЕАЛИЗАЦИЯ
+    // НОВЫЙ МЕТОД: getStatistics() - ДОБАВЛЕН В ЭТОМ КОММИТЕ
+    // ============================================
+    /**
+     * Возвращает статистику по книгам в библиотеке
+     * @return строка с информацией о количестве книг
+     */
+    public String getStatistics() {
+        int totalBooks = books.size();
+        int availableBooks = 0;
+        int borrowedBooks = 0;
+
+        // Подсчитываем доступные и выданные книги
+        for (Book book : books) {
+            if (book.isAvailable()) {
+                availableBooks++;
+            } else {
+                borrowedBooks++;
+            }
+        }
+
+        // Формируем строку статистики
+        return String.format("Статистика библиотеки:\n" +
+                        "  Всего книг: %d\n" +
+                        "  Доступно для выдачи: %d\n" +
+                        "  Выдано читателям: %d\n" +
+                        "  Заполненность библиотеки: %.1f%%",
+                totalBooks,
+                availableBooks,
+                borrowedBooks,
+                totalBooks > 0 ? (double) borrowedBooks / totalBooks * 100 : 0.0);
+    }
+
+    // ============================================
+    // ВЛОЖЕННЫЙ СТАТИЧЕСКИЙ КЛАСС
     // ============================================
     public static class OperationLog {
-        // Enum для типов операций - РЕАЛИЗОВАН
         public enum OperationType {
             ADD_BOOK, BORROW, RETURN
         }
 
-        // ============================================
-        // ВНУТРЕННИЙ КЛАСС - ПОЛНАЯ РЕАЛИЗАЦИЯ
-        // ============================================
         public class LogEntry {
-            // Поля внутреннего класса
             private OperationType type;
             private LocalDateTime timestamp;
             private String description;
 
-            // Конструктор внутреннего класса
             public LogEntry(OperationType type, String description) {
                 this.type = type;
                 this.description = description;
                 this.timestamp = LocalDateTime.now();
             }
 
-            // Геттеры внутреннего класса
             public OperationType getType() {
                 return type;
             }
@@ -118,7 +138,6 @@ public class Library {
                 return description;
             }
 
-            // toString внутреннего класса
             @Override
             public String toString() {
                 return String.format("[%s] %s: %s",
@@ -126,28 +145,21 @@ public class Library {
             }
         }
 
-        // Поле вложенного класса
         private List<LogEntry> entries;
 
-        // Конструктор вложенного класса
         public OperationLog() {
             this.entries = new ArrayList<>();
         }
 
-        // Методы вложенного класса
-
-        // Добавление записи в журнал
         public void addEntry(OperationType type, String description) {
             LogEntry entry = new LogEntry(type, description);
             entries.add(entry);
         }
 
-        // Получение всех записей
         public List<LogEntry> getEntries() {
             return new ArrayList<>(entries);
         }
 
-        // Печать журнала
         public void printLog() {
             System.out.println("=== ЖУРНАЛ ОПЕРАЦИЙ ===");
             if (entries.isEmpty()) {
